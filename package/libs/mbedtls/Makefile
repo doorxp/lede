@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mbedtls
-PKG_VERSION:=2.28.1
+PKG_VERSION:=3.3.0
 PKG_RELEASE:=$(AUTORELEASE)
 PKG_USE_MIPS16:=0
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/ARMmbed/mbedtls/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=6797a7b6483ef589deeab8d33d401ed235d7be25eeecda1be8ddfed406d40ff4
+PKG_HASH:=skip
 
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=gpl-2.0.txt
@@ -99,6 +99,7 @@ $(call Package/mbedtls/Default)
 endef
 
 define Package/libmbedtls/config
+	# $(STAGING_DIR_HOSTPKG)/bin/pip3 install jsonschema jinja2  1> /dev/null
 	source "$(SOURCE)/Config.in"
 endef
 
@@ -132,19 +133,19 @@ CMAKE_OPTIONS += \
 
 define Build/Configure
 	$(call Build/Configure/Default)
-
 	sed -i '/fuzz/d' $(PKG_BUILD_DIR)/programs/CMakeLists.txt
 	sed -i '/test/d' $(PKG_BUILD_DIR)/programs/CMakeLists.txt
+
 endef
 
 define Build/Prepare
-       $(call Build/Prepare/Default)
+	$(call Build/Prepare/Default)
 
-       $(if $(strip $(foreach opt,$(MBEDTLS_BUILD_OPTS),$($(opt)))),
-	 $(foreach opt,$(MBEDTLS_BUILD_OPTS),
-	 $(PKG_BUILD_DIR)/scripts/config.py \
-	 -f $(PKG_BUILD_DIR)/include/mbedtls/config.h \
-	 $(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt))),)
+	$(if $(strip $(foreach opt,$(MBEDTLS_BUILD_OPTS),$($(opt)))),
+	$(foreach opt,$(MBEDTLS_BUILD_OPTS),
+	$(PKG_BUILD_DIR)/scripts/config.py \
+	-f $(PKG_BUILD_DIR)/include/mbedtls/mbedtls_config.h \
+	$(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt))),)
 endef
 
 define Build/InstallDev
