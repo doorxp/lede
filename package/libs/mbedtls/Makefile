@@ -148,7 +148,7 @@ define Build/Prepare
 	$(PKG_BUILD_DIR)/scripts/config.py \
 	-f $(PKG_BUILD_DIR)/include/mbedtls/mbedtls_config.h \
 	$(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt))),)
-	ln -s $(PKG_BUILD_DIR)/include/mbedtls/mbedtls_config.h $(PKG_BUILD_DIR)/include/mbedtls/config.h
+	[ ! -f $(PKG_BUILD_DIR)/include/mbedtls/config.h ] && ln -s $(PKG_BUILD_DIR)/include/mbedtls/mbedtls_config.h $(PKG_BUILD_DIR)/include/mbedtls/config.h
 endef
 
 define Build/InstallDev
